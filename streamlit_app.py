@@ -2,7 +2,6 @@ import streamlit as st
 import pyrebase
 import firebase_admin
 from firebase_admin import credentials, auth
-from firebase_admin import initialize_app
 
 # Firebase Admin SDK credentials (from your JSON file)
 cred = credentials.Certificate({
@@ -112,13 +111,16 @@ def main():
             st.session_state["register"] = True
             st.rerun()
 
-        if st.button("Forgot Password"):
-            reset_email = st.text_input("Enter your email for password reset")
-            if st.button("Send Password Reset Email"):
+        st.subheader("Forgot Password")
+        reset_email = st.text_input("Enter your email for password reset")
+        if st.button("Send Password Reset Email"):
+            if reset_email:
                 if reset_password(reset_email):
-                    st.success("Password reset email sent!")
+                    st.success("Password reset email sent! Check your inbox.")
                 else:
-                    st.error("Error sending password reset email. Try again.")
+                    st.error("Failed to send password reset email. Please try again.")
+            else:
+                st.error("Please enter a valid email address.")
 
 if __name__ == '__main__':
     main()
