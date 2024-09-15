@@ -37,6 +37,7 @@ firebase = pyrebase.initialize_app(firebase_config)
 auth_client = firebase.auth()
 
 # Authentication functions for login, registration, and password reset
+# Authentication functions for login, registration, and password reset
 def login_user(email, password):
     try:
         user = auth_client.sign_in_with_email_and_password(email, password)
@@ -66,6 +67,8 @@ def main():
         st.session_state["logged_in"] = False
     if "register" not in st.session_state:
         st.session_state["register"] = False
+    if "forgot_password" not in st.session_state:
+        st.session_state["forgot_password"] = False  # To control the password reset visibility
 
     if st.session_state["logged_in"]:
         st.write("You have logged in.")
@@ -111,16 +114,20 @@ def main():
             st.session_state["register"] = True
             st.rerun()
 
-        st.subheader("Forgot Password")
-        reset_email = st.text_input("Enter your email for password reset")
-        if st.button("Send Password Reset Email"):
-            if reset_email:
-                if reset_password(reset_email):
-                    st.success("Password reset email sent! Check your inbox.")
+        if st.button("Forgot Password"):
+            st.session_state["forgot_password"] = not st.session_state["forgot_password"]
+
+        if st.session_state["forgot_password"]:
+            st.subheader("Forgot Password")
+            reset_email = st.text_input("Enter your email for password reset")
+            if st.button("Send Password Reset Email"):
+                if reset_email:
+                    if reset_password(reset_email):
+                        st.success("Password reset email sent! Check your inbox.")
+                    else:
+                        st.error("Failed to send password reset email. Please try again.")
                 else:
-                    st.error("Failed to send password reset email. Please try again.")
-            else:
-                st.error("Please enter a valid email address.")
+                    st.error("Please enter a valid email address.")
 
 if __name__ == '__main__':
     main()
