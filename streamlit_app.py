@@ -37,7 +37,7 @@ firebase_config = {
 firebase = pyrebase.initialize_app(firebase_config)
 auth_client = firebase.auth()
 
-# Authentication functions for login and registration
+# Authentication functions for login, registration, and password reset
 def login_user(email, password):
     try:
         user = auth_client.sign_in_with_email_and_password(email, password)
@@ -48,6 +48,13 @@ def login_user(email, password):
 def register_user(email, password):
     try:
         auth_client.create_user_with_email_and_password(email, password)
+        return True
+    except:
+        return False
+
+def reset_password(email):
+    try:
+        auth_client.send_password_reset_email(email)
         return True
     except:
         return False
@@ -104,6 +111,14 @@ def main():
         if st.button("Sign Up"):
             st.session_state["register"] = True
             st.rerun()
+
+        if st.button("Forgot Password"):
+            reset_email = st.text_input("Enter your email for password reset")
+            if st.button("Send Password Reset Email"):
+                if reset_password(reset_email):
+                    st.success("Password reset email sent!")
+                else:
+                    st.error("Error sending password reset email. Try again.")
 
 if __name__ == '__main__':
     main()
