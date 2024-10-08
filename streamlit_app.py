@@ -100,11 +100,12 @@ def logout_user():
     cookies["logged_in"] = "False"
     cookies["user_email"] = ""
     cookies.save()
+    st.session_state["page"] = "user"  # Reset page to user login
     st.rerun()  # Use this to refresh the app state
 
 def navigate_to(page):
-    st.query_params["page"] = page
-    st.rerun()  # Trigger app rerun after query param update
+    st.session_state["page"] = page  # Update session state to track the current page
+    st.rerun()  # Trigger app rerun after page update
 
 # Page handlers
 def admin_login_page():
@@ -179,6 +180,8 @@ def main():
         st.session_state["logged_in"] = False
     if "user_email" not in st.session_state:
         st.session_state["user_email"] = None
+    if "page" not in st.session_state:
+        st.session_state["page"] = "user"  # Default page
 
     # Check session timeout if logged in
     if st.session_state["logged_in"]:
@@ -187,8 +190,8 @@ def main():
         if st.button("Logout"):
             logout_user()
     else:
-        # Handle navigation
-        page = st.query_params.get("page", "user")
+        # Handle navigation based on session state
+        page = st.session_state["page"]
 
         if page == "admin":
             admin_login_page()
