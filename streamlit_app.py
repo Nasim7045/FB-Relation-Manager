@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pyrebase
 import firebase_admin
@@ -56,7 +57,6 @@ if not cookies.ready():
 # Constants
 TIMEOUT_DURATION = 900  # 15 minutes in seconds
 
-
 # Authentication functions
 def login_user(email, password):
     try:
@@ -100,12 +100,11 @@ def logout_user():
     cookies["logged_in"] = "False"
     cookies["user_email"] = ""
     cookies.save()
-    st.session_state["page"] = "user"  # Reset page to user login
-    st.rerun()  # Use this to refresh the app state
+    st.rerun()
 
 def navigate_to(page):
-    st.session_state["page"] = page  # Update session state to track the current page
-    st.rerun()  # Trigger app rerun after page update
+    st.query_params["page"] = page
+    st.rerun()
 
 # Page handlers
 def admin_login_page():
@@ -126,9 +125,7 @@ def admin_login_page():
                     cookies["user_email"] = user_email
                     cookies["last_activity"] = str(time.time())
                     cookies.save()
-                    st.success("Login successful! Redirecting...")
-                    time.sleep(1)  # Short pause for feedback
-                    st.rerun()  # Rerun to reflect login status
+                    st.rerun()
                 else:
                     st.error("You do not have Admin privileges.")
 
@@ -150,9 +147,7 @@ def user_login_page():
                     cookies["user_email"] = user_email
                     cookies["last_activity"] = str(time.time())
                     cookies.save()
-                    st.success("Login successful! Redirecting...")
-                    time.sleep(1)  # Short pause for feedback
-                    st.rerun()  # Rerun to reflect login status
+                    st.rerun()
                 else:
                     st.error("You do not have User privileges.")
 
@@ -170,7 +165,7 @@ def registration_page():
                 if register_user(email, password, role):
                     st.success("Registration successful! You can now log in.")
                     time.sleep(2)  # Give user time to read the success message
-                    navigate_to("user")  # Redirect to user login page
+                    navigate_to("user")
             else:
                 st.error("Passwords do not match.")
 
@@ -180,8 +175,6 @@ def main():
         st.session_state["logged_in"] = False
     if "user_email" not in st.session_state:
         st.session_state["user_email"] = None
-    if "page" not in st.session_state:
-        st.session_state["page"] = "user"  # Default page
 
     # Check session timeout if logged in
     if st.session_state["logged_in"]:
@@ -190,8 +183,8 @@ def main():
         if st.button("Logout"):
             logout_user()
     else:
-        # Handle navigation based on session state
-        page = st.session_state["page"]
+        # Handle navigation
+        page = st.query_params.get("page", "user")
 
         if page == "admin":
             admin_login_page()
