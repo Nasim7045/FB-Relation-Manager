@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pyrebase
 import firebase_admin
@@ -44,6 +43,7 @@ db = firestore.client()
 
 # Set page config
 st.set_page_config(page_title="Login", page_icon="🔑")
+st.title("Welcome to login page")
 
 # Cookie manager setup
 cookies = EncryptedCookieManager(
