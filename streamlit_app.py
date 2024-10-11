@@ -43,7 +43,6 @@ db = firestore.client()
 
 # Set page config
 st.set_page_config(page_title="Login", page_icon="🔑")
-st.title("Welcome to login page")
 
 # Cookie manager setup
 cookies = EncryptedCookieManager(
@@ -103,7 +102,7 @@ def logout_user():
     st.rerun()
 
 def navigate_to(page):
-    st.query_params["page"] = page
+    st.experimental_set_query_params(page=page)  # Use this for setting query parameters
     st.rerun()
 
 # Page handlers
@@ -184,7 +183,7 @@ def main():
             logout_user()
     else:
         # Handle navigation
-        page = st.query_params.get("page", "user")
+        page = st.experimental_get_query_params().get("page", ["user"])[0]
 
         if page == "admin":
             admin_login_page()
